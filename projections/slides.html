@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Quantum Resonance and Paraconsistent Logic</title>
+    
+    <!-- Reveal.js CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.3.1/reset.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.3.1/reveal.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.3.1/theme/simple.min.css" id="theme">
+    
+    <!-- Custom CSS for Minimalist Theme and Visuals -->
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap');
+        
+        .reveal {
+            font-family: 'Inter', sans-serif;
+            color: #2c3e50;
+        }
+        .reveal h1, .reveal h2, .reveal h3, .reveal h4 {
+            font-family: 'Inter', sans-serif;
+            text-transform: none;
+            font-weight: 600;
+            color: #1a252f;
+            letter-spacing: -0.02em;
+        }
+        .reveal h1 { font-size: 2.5em; }
+        .reveal h2 { font-size: 1.8em; margin-bottom: 0.5em; }
+        .reveal p { font-weight: 300; font-size: 1.1em; line-height: 1.4; color: #4a5568; }
+        
+        .visual-container {
+            width: 100%;
+            height: 450px;
+            margin: 20px auto;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            background: #f8f9fa;
+            border-radius: 12px;
+            box-shadow: inset 0 2px 10px rgba(0,0,0,0.03);
+            overflow: hidden;
+        }
+
+        .minimal-text {
+            font-size: 0.9em !important;
+            color: #718096 !important;
+            margin-top: 15px !important;
+        }
+
+        /* SVG Animations */
+        @keyframes explode {
+            0% { fill: #3498db; r: 10; opacity: 1; }
+            10% { fill: #e74c3c; r: 15; opacity: 1; }
+            30% { fill: #e74c3c; r: 500; opacity: 0.5; }
+            100% { fill: #e74c3c; r: 500; opacity: 0; }
+        }
+        @keyframes shockwave {
+            0% { stroke: #e74c3c; stroke-width: 2; opacity: 1; stroke-dashoffset: 100; }
+            100% { stroke: #e74c3c; stroke-width: 8; opacity: 0; stroke-dashoffset: 0; }
+        }
+        @keyframes pulse-node {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+        @keyframes phase-shift {
+            0% { stroke-dashoffset: 200; }
+            100% { stroke-dashoffset: 0; }
+        }
+
+        .explosion-node { animation: explode 4s infinite; transform-origin: center; }
+        .explosion-line { stroke-dasharray: 100; animation: shockwave 4s infinite; }
+        .stable-node { animation: pulse-node 3s infinite ease-in-out; transform-origin: center; }
+        .quantum-wire { stroke-dasharray: 20; animation: phase-shift 2s linear infinite; }
+
+        /* Vis.js & Three.js Canvas Overrides */
+        #network-canvas, #landscape-canvas {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+        
+        .math-display {
+            font-size: 1.2em;
+            padding: 15px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            display: inline-block;
+        }
+    </style>
+</head>
+<body>
+
+<div class="reveal">
+    <div class="slides">
+
+        <!-- SLIDE 1: Title -->
+        <section>
+            <h1>Quantum Resonance & Paraconsistent Logic</h1>
+            <p>Bypassing the NP-Complete Bottleneck</p>
+            <div class="visual-container" style="height: 250px; background: transparent; box-shadow: none;">
+                <svg width="200" height="200" viewBox="0 0 100 100">
+                    <circle cx="50" cy="50" r="40" fill="none" stroke="#bdc3c7" stroke-width="2"/>
+                    <circle cx="50" cy="50" r="40" fill="none" stroke="#3498db" stroke-width="2" stroke-dasharray="60" class="quantum-wire"/>
+                    <circle cx="50" cy="50" r="15" fill="#2c3e50" class="stable-node"/>
+                    <path d="M 50 20 L 50 80 M 20 50 L 80 50" stroke="#ecf0f1" stroke-width="1"/>
+                </svg>
+            </div>
+            <p class="minimal-text">Yury Kartynnik • Google Gemini • Anthropic Claude</p>
+        </section>
+
+        <!-- SLIDE 2: The Classical Bottleneck -->
+        <section>
+            <h2>The Classical Bottleneck</h2>
+            <p>The <strong>Principle of Explosion</strong>: A single contradiction destroys the entire system.</p>
+            <div class="visual-container">
+                <svg width="100%" height="100%" viewBox="0 0 800 400">
+                    <defs>
+                        <radialGradient id="grad1" cx="50%" cy="50%" r="50%">
+                            <stop offset="0%" stop-color="#e74c3c" stop-opacity="0.8"/>
+                            <stop offset="100%" stop-color="#fff" stop-opacity="0"/>
+                        </radialGradient>
+                    </defs>
+                    <!-- Grid Lines -->
+                    <g stroke="#ecf0f1" stroke-width="2">
+                        <line x1="0" y1="100" x2="800" y2="100"/>
+                        <line x1="0" y1="200" x2="800" y2="200"/>
+                        <line x1="0" y1="300" x2="800" y2="300"/>
+                        <line x1="200" y1="0" x2="200" y2="400"/>
+                        <line x1="400" y1="0" x2="400" y2="400"/>
+                        <line x1="600" y1="0" x2="600" y2="400"/>
+                    </g>
+                    <!-- Shockwaves -->
+                    <circle cx="400" cy="200" r="100" fill="url(#grad1)" class="explosion-node"/>
+                    <line x1="400" y1="200" x2="200" y2="100" class="explosion-line"/>
+                    <line x1="400" y1="200" x2="600" y2="100" class="explosion-line"/>
+                    <line x1="400" y1="200" x2="200" y2="300" class="explosion-line"/>
+                    <line x1="400" y1="200" x2="600" y2="300" class="explosion-line"/>
+                    <!-- Equation -->
+                    <text x="400" y="205" font-family="Inter" font-size="24" font-weight="bold" fill="white" text-anchor="middle">P ∧ ¬P</text>
+                </svg>
+            </div>
+            <p class="minimal-text">Solvers expend $\mathcal{O}(2^n)$ overhead enforcing global consistency.</p>
+        </section>
+
+        <!-- SLIDE 3: Nash Equilibrium Inspiration -->
+        <section>
+            <h2>Inspiration: Nash Equilibria</h2>
+            <p>Multi-agent systems achieve <strong>local stability</strong> without global enforcement.</p>
+            <div class="visual-container">
+                <svg width="100%" height="100%" viewBox="0 0 600 400">
+                    <!-- Triangle of stability -->
+                    <path d="M 300 100 L 200 250 L 400 250 Z" fill="#e8f4f8" stroke="#3498db" stroke-width="3" stroke-linejoin="round"/>
+                    
+                    <!-- Nodes -->
+                    <g class="stable-node" style="animation-delay: 0s;">
+                        <circle cx="300" cy="100" r="25" fill="#3498db"/>
+                        <text x="300" y="105" font-family="Inter" fill="white" text-anchor="middle" font-size="14">Agent A</text>
+                    </g>
+                    <g class="stable-node" style="animation-delay: 1s;">
+                        <circle cx="200" cy="250" r="25" fill="#2ecc71"/>
+                        <text x="200" y="255" font-family="Inter" fill="white" text-anchor="middle" font-size="14">Agent B</text>
+                    </g>
+                    <g class="stable-node" style="animation-delay: 2s;">
+                        <circle cx="400" cy="250" r="25" fill="#9b59b6"/>
+                        <text x="400" y="255" font-family="Inter" fill="white" text-anchor="middle" font-size="14">Agent C</text>
+                    </g>
+
+                    <!-- Forces -->
+                    <path d="M 280 120 Q 250 180 220 230" fill="none" stroke="#7f8c8d" stroke-width="2" stroke-dasharray="5" marker-end="url(#arrow)"/>
+                    <path d="M 230 250 Q 300 260 370 250" fill="none" stroke="#7f8c8d" stroke-width="2" stroke-dasharray="5" marker-end="url(#arrow)"/>
+                    <path d="M 380 230 Q 350 180 320 120" fill="none" stroke="#7f8c8d" stroke-width="2" stroke-dasharray="5" marker-end="url(#arrow)"/>
+                    
+                    <defs>
+                        <marker id="arrow" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto" markerUnits="strokeWidth">
+                            <path d="M0,0 L0,6 L9,3 z" fill="#7f8c8d" />
+                        </marker>
+                    </defs>
+                </svg>
+            </div>
+            <p class="minimal-text">Can quantum states rest in a logical Nash Equilibrium?</p>
+        </section>
+
+        <!-- SLIDE 4: Paraconsistent Space -->
+        <section>
+            <h2>The 4-Valued Paraconsistent Space</h2>
+            <p>Mapping to a Belnap logical basis $\mathcal{B} = \{|0\rangle, |1\rangle, |\bot\rangle, |\top\rangle\}$</p>
+            <div class="visual-container">
+                <svg width="100%" height="100%" viewBox="0 0 500 400">
+                    <!-- Axes -->
+                    <line x1="250" y1="50" x2="250" y2="350" stroke="#bdc3c7" stroke-width="2"/>
+                    <line x1="100" y1="200" x2="400" y2="200" stroke="#bdc3c7" stroke-width="2"/>
+                    
+                    <!-- Diamond -->
+                    <polygon points="250,80 370,200 250,320 130,200" fill="#f0f3f4" stroke="#95a5a6" stroke-width="1" stroke-dasharray="4"/>
+                    
+                    <!-- Nodes -->
+                    <!-- Top: Contradiction -->
+                    <circle cx="250" cy="80" r="30" fill="#e74c3c"/>
+                    <text x="250" y="86" font-family="Inter" font-weight="bold" fill="white" text-anchor="middle" font-size="20">|⊤⟩</text>
+                    <text x="250" y="40" font-family="Inter" fill="#e74c3c" text-anchor="middle" font-size="14">Contradiction (Both)</text>
+                    
+                    <!-- Bottom: Vacuum -->
+                    <circle cx="250" cy="320" r="30" fill="#7f8c8d"/>
+                    <text x="250" y="326" font-family="Inter" font-weight="bold" fill="white" text-anchor="middle" font-size="20">|⊥⟩</text>
+                    <text x="250" y="370" font-family="Inter" fill="#7f8c8d" text-anchor="middle" font-size="14">Vacuum (Neither)</text>
+
+                    <!-- Left: False -->
+                    <circle cx="130" cy="200" r="30" fill="#34495e"/>
+                    <text x="130" y="206" font-family="Inter" font-weight="bold" fill="white" text-anchor="middle" font-size="20">|0⟩</text>
+                    <text x="80" y="205" font-family="Inter" fill="#34495e" text-anchor="end" font-size="14">False</text>
+
+                    <!-- Right: True -->
+                    <circle cx="370" cy="200" r="30" fill="#3498db"/>
+                    <text x="370" y="206" font-family="Inter" font-weight="bold" fill="white" text-anchor="middle" font-size="20">|1⟩</text>
+                    <text x="420" y="205" font-family="Inter" fill="#3498db" text-anchor="start" font-size="14">True</text>
+                </svg>
+            </div>
+        </section>
+
+        <!-- SLIDE 5: Resonance Gate -->
+        <section>
+            <h2>The Paraconsistent Resonance Gate</h2>
+            <p>Trapping logical contradiction into an orthogonal basis via $p$-adic phase shift.</p>
+            <div class="visual-container">
+                <svg width="100%" height="100%" viewBox="0 0 700 300">
+                    <!-- Input Wires -->
+                    <line x1="50" y1="100" x2="250" y2="100" stroke="#34495e" stroke-width="4"/>
+                    <line x1="50" y1="200" x2="250" y2="200" stroke="#3498db" stroke-width="4"/>
+                    
+                    <text x="40" y="105" font-family="Inter" font-size="20" font-weight="bold" text-anchor="end">|0⟩</text>
+                    <text x="40" y="205" font-family="Inter" font-size="20" font-weight="bold" text-anchor="end">|1⟩</text>
+
+                    <!-- Gate -->
+                    <rect x="250" y="70" width="150" height="160" rx="10" fill="#2c3e50" stroke="#1a252f" stroke-width="3"/>
+                    <text x="325" y="160" font-family="Inter" font-size="36" font-weight="bold" fill="white" text-anchor="middle">R_G</text>
+
+                    <!-- Output Wire -->
+                    <line x1="400" y1="150" x2="600" y2="150" stroke="#e74c3c" stroke-width="6" class="quantum-wire"/>
+                    
+                    <!-- Output State -->
+                    <circle cx="600" cy="150" r="35" fill="#e74c3c"/>
+                    <text x="600" y="158" font-family="Inter" font-size="24" font-weight="bold" fill="white" text-anchor="middle">|⊤⟩</text>
+                    
+                    <!-- Phase Shift Label -->
+                    <text x="500" y="130" font-family="Inter" font-size="16" fill="#e74c3c" text-anchor="middle">e^{i\phi_p}</text>
+                </svg>
+            </div>
+            <div class="math-display">
+                $R_G (|0\rangle \otimes |1\rangle) = e^{i\phi_p} |\top\rangle$
+            </div>
+        </section>
+
+        <!-- SLIDE 6: Quarantine -->
+        <section>
+            <h2>Topological Quarantine</h2>
+            <p>The contradiction yields a <strong>localized identity tensor</strong>, neutralizing the explosion.</p>
+            <div class="visual-container">
+                <svg width="100%" height="100%" viewBox="0 0 600 400">
+                    <!-- Background Manifold -->
+                    <path d="M 50 200 Q 150 180 250 200 T 450 200 T 550 200" fill="none" stroke="#bdc3c7" stroke-width="2"/>
+                    <path d="M 50 250 Q 150 230 250 250 T 450 250 T 550 250" fill="none" stroke="#bdc3c7" stroke-width="2"/>
+                    <path d="M 50 150 Q 150 130 250 150 T 450 150 T 550 150" fill="none" stroke="#bdc3c7" stroke-width="2"/>
+                    
+                    <!-- Shield/Quarantine Zone -->
+                    <circle cx="300" cy="200" r="80" fill="#fdedec" stroke="#e74c3c" stroke-width="2" stroke-dasharray="10" class="quantum-wire"/>
+                    
+                    <!-- Trapped Contradiction -->
+                    <circle cx="300" cy="200" r="20" fill="#e74c3c" class="stable-node"/>
+                    <text x="300" y="206" font-family="Inter" font-weight="bold" fill="white" text-anchor="middle" font-size="16">⊤</text>
+                    
+                    <!-- Annotations -->
+                    <text x="300" y="100" font-family="Inter" font-size="16" font-weight="bold" fill="#c0392b" text-anchor="middle">Confined Sub-manifold</text>
+                    <text x="300" y="310" font-family="Inter" font-size="18" font-weight="bold" fill="#2c3e50" text-anchor="middle">$\mathbb{I}_{loc}$</text>
+                </svg>
+            </div>
+            <div class="math-display">
+                $\rho_\top = \text{Tr}_{env} \left( R_G|\psi\rangle\langle\psi|R_G^\dagger \right) = |\top\rangle\langle\top|$
+            </div>
+        </section>
+
+        <!-- SLIDE 7: Asynchronous Fault Detection -->
+        <section data-state="init-network">
+            <h2>Asynchronous Fault Detection</h2>
+            <p>Verifying states against a shared modular frequency (Fermat/Wiles analogy).</p>
+            <div class="visual-container">
+                <div id="network-canvas"></div>
+                <!-- Overlay Legend -->
+                <div style="position: absolute; bottom: 10px; right: 10px; background: rgba(255,255,255,0.9); padding: 10px; border-radius: 5px; font-size: 0.8em; border: 1px solid #ddd;">
+                    <span style="color: #3498db;">●</span> Modular (Valid)<br>
+                    <span style="color: #e74c3c;">●</span> Non-Modular (Frey Curve / Fault)<br>
+                    <span style="color: #95a5a6;">- -</span> Quarantined
+                </div>
+            </div>
+            <p class="minimal-text">Non-modular $p$-adic signatures dynamically isolate themselves.</p>
+        </section>
+
+        <!-- SLIDE 8: Complexity Landscape -->
+        <section data-state="init-landscape">
+            <h2>Smoothing the Hardness Landscape</h2>
+            <p>Reducing $\mathcal{O}(2^n)$ search spaces into localized resonant verifications.</p>
+            <div class="visual-container">
+                <div id="landscape-canvas"></div>
+            </div>
+            <p class="minimal-text">Mapping intractable classical conflicts into stable $|\top\rangle$ nodes.</p>
+        </section>
+
+        <!-- SLIDE 9: Conclusion -->
+        <section>
+            <h2>Conclusion</h2>
+            <div style="display: flex; justify-content: space-around; align-items: center; margin-top: 50px;">
+                <div style="text-align: center; width: 30%;">
+                    <svg width="80" height="80" viewBox="0 0 100 100">
+                        <circle cx="50" cy="50" r="40" fill="#e8f4f8" stroke="#3498db" stroke-width="4"/>
+                        <path d="M 30 50 L 45 65 L 70 35" fill="none" stroke="#3498db" stroke-width="6" stroke-linecap="round"/>
+                    </svg>
+                    <h4 style="margin-top: 15px;">Local Nash Equilibria</h4>
+                    <p class="minimal-text">No global absolute enforcement required.</p>
+                </div>
+                <div style="text-align: center; width: 30%;">
+                    <svg width="80" height="80" viewBox="0 0 100 100">
+                        <rect x="20" y="20" width="60" height="60" rx="10" fill="#fdedec" stroke="#e74c3c" stroke-width="4"/>
+                        <circle cx="50" cy="50" r="15" fill="#e74c3c"/>
+                    </svg>
+                    <h4 style="margin-top: 15px;">Topological Quarantine</h4>
+                    <p class="minimal-text">Contradictions are trapped, not explosive.</p>
+                </div>
+                <div style="text-align: center; width: 30%;">
+                    <svg width="80" height="80" viewBox="0 0 100 100">
+                        <path d="M 10 80 Q 50 20 90 80" fill="none" stroke="#2ecc71" stroke-width="6" stroke-linecap="round"/>
+                        <circle cx="50" cy="50" r="8" fill="#2ecc71"/>
+                    </svg>
+                    <h4 style="margin-top: 15px;">BQP Expansion</h4>
+                    <p class="minimal-text">Highly NP-Complete problems may become tractable.</p>
+                </div>
+            </div>
+        </section>
+
+    </div>
+</div>
+
+<!-- Scripts -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.3.1/reveal.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.3.1/plugin/math/math.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/standalone/umd/vis-network.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+<script>
+    // Initialize Reveal.js
+    Reveal.initialize({
+        controls: true,
+        progress: true,
+        center: true,
+        hash: true,
+        transition: 'fade',
+        plugins: [ RevealMath.MathJax3 ]
+    });
+
+    // Vis.js Network Animation
+    let networkInitialized = false;
+    Reveal.on('init-network', () => {
+        if (networkInitialized) return;
+        networkInitialized = true;
+
+        const container = document.getElementById('network-canvas');
+        
+        // Create nodes
+        const nodes = new vis.DataSet([
+            { id: 1, label: 'Node 1', color: '#3498db' },
+            { id: 2, label: 'Node 2', color: '#3498db' },
+            { id: 3, label: 'Node 3', color: '#3498db' },
+            { id: 4, label: 'Node 4', color: '#3498db' },
+            { id: 5, label: 'Node 5', color: '#3498db' },
+            { id: 6, label: 'Node 6', color: '#3498db' }
+        ]);
+
+        // Create edges
+        const edges = new vis.DataSet([
+            { id: 'e1', from: 1, to: 2, color: { color: '#bdc3c7' } },
+            { id: 'e2', from: 2, to: 3, color: { color: '#bdc3c7' } },
+            { id: 'e3', from: 3, to: 4, color: { color: '#bdc3c7' } },
+            { id: 'e4', from: 4, to: 5, color: { color: '#bdc3c7' } },
+            { id: 'e5', from: 5, to: 6, color: { color: '#bdc3c7' } },
+            { id: 'e6', from: 6, to: 1, color: { color: '#bdc3c7' } },
+            { id: 'e7', from: 2, to: 5, color: { color: '#bdc3c7' } }
+        ]);
+
+        const data = { nodes: nodes, edges: edges };
+        const options = {
+            nodes: { shape: 'dot', size: 20, font: { size: 14, color: '#2c3e50', face: 'Inter' } },
+            physics: { stabilization: true, barnesHut: { springLength: 150 } }
+        };
+
+        const network = new vis.Network(container, data, options);
+
+        // Animation Loop: Fault -> Detect -> Quarantine -> Restore
+        setInterval(() => {
+            // Fault occurs
+            nodes.update({ id: 5, color: '#e74c3c', label: 'Fault (Non-Modular)' });
+            
+            setTimeout(() => {
+                // Quarantine
+                edges.update([
+                    { id: 'e4', dashes: true, color: { color: '#e74c3c' } },
+                    { id: 'e5', dashes: true, color: { color: '#e74c3c' } },
+                    { id: 'e7', dashes: true, color: { color: '#e74c3c' } }
+                ]);
+            }, 1000);
+
+            setTimeout(() => {
+                // Restore (for animation loop purposes)
+                nodes.update({ id: 5, color: '#3498db', label: 'Node 5' });
+                edges.update([
+                    { id: 'e4', dashes: false, color: { color: '#bdc3c7' } },
+                    { id: 'e5', dashes: false, color: { color: '#bdc3c7' } },
+                    { id: 'e7', dashes: false, color: { color: '#bdc3c7' } }
+                ]);
+            }, 4000);
+
+        }, 5000);
+    });
+
+    // Three.js Landscape Animation
+    let landscapeInitialized = false;
+    Reveal.on('init-landscape', () => {
+        if (landscapeInitialized) return;
+        landscapeInitialized = true;
+
+        const container = document.getElementById('landscape-canvas');
+        const scene = new THREE.Scene();
+        scene.background = new THREE.Color(0xf8f9fa);
+
+        const camera = new THREE.PerspectiveCamera(60, container.clientWidth / container.clientHeight, 0.1, 1000);
+        camera.position.set(0, 15, 25);
+        camera.lookAt(0, 0, 0);
+
+        const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+        renderer.setSize(container.clientWidth, container.clientHeight);
+        container.appendChild(renderer.domElement);
+
+        // Create Plane
+        const geometry = new THREE.PlaneGeometry(40, 40, 60, 60);
+        geometry.rotateX(-Math.PI / 2);
+
+        // Save original vertices for animation
+        const positionAttribute = geometry.attributes.position;
+        const baseZ = [];
+        for (let i = 0; i < positionAttribute.count; i++) {
+            const x = positionAttribute.getX(i);
+            const y = positionAttribute.getZ(i); // Note: rotated X, so Z is the 2D Y
+            // Create rugged landscape using sine waves
+            const z = Math.sin(x * 0.5) * Math.cos(y * 0.5) * 4 + Math.sin(x * 1.5) * 1.5;
+            baseZ.push(z);
+            positionAttribute.setY(i, z);
+        }
+        geometry.computeVertexNormals();
+
+        const material = new THREE.MeshPhongMaterial({ 
+            color: '#3498db', 
+            wireframe: true,
+            transparent: true,
+            opacity: 0.7
+        });
+        
+        const plane = new THREE.Mesh(geometry, material);
+        scene.add(plane);
+
+        // Lighting
+        const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
+        scene.add(ambientLight);
+        const dirLight = new THREE.DirectionalLight(0xffffff, 0.8);
+        dirLight.position.set(10, 20, 10);
+        scene.add(dirLight);
+
+        // Animation State
+        let time = 0;
+        let smoothing = false;
+        let smoothFactor = 1.0;
+
+        setInterval(() => {
+            smoothing = !smoothing;
+        }, 4000);
+
+        function animate() {
+            requestAnimationFrame(animate);
+
+            time += 0.01;
+            plane.rotation.y = Math.sin(time * 0.5) * 0.2;
+
+            if (smoothing && smoothFactor > 0.1) {
+                smoothFactor -= 0.01;
+            } else if (!smoothing && smoothFactor < 1.0) {
+                smoothFactor += 0.01;
+            }
+
+            // Update vertices
+            const positions = plane.geometry.attributes.position;
+            for (let i = 0; i < positions.count; i++) {
+                // Base ruggedness scaled by smoothFactor, plus a tiny bit of wave animation
+                const z = baseZ[i] * smoothFactor + Math.sin(time * 2 + positions.getX(i)) * 0.5 * smoothFactor;
+                positions.setY(i, z);
+            }
+            positions.needsUpdate = true;
+            plane.geometry.computeVertexNormals();
+
+            renderer.render(scene, camera);
+        }
+        animate();
+
+        // Handle Resize
+        window.addEventListener('resize', () => {
+            if(container.clientWidth > 0) {
+                camera.aspect = container.clientWidth / container.clientHeight;
+                camera.updateProjectionMatrix();
+                renderer.setSize(container.clientWidth, container.clientHeight);
+            }
+        });
+    });
+
+</script>
+</body>
+</html>
