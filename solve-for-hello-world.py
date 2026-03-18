@@ -1,0 +1,86 @@
+# pip install z3-solver
+from z3 import *
+
+def solve_hyperverse_soup(target_string, hearth_size=97, max_steps=30):
+    solver = Solver()
+    
+    # 1. Symbolic Hearth for p=97
+    # Each cell is an integer in the range [0, 96]
+    hearth = [Int(f'h_{i}') for i in range(hearth_size)]
+    for h in hearth:
+        solver.add(h >= 0, h < hearth_size)
+
+    # 2. Target Resonance
+    target_ascii = [ord(c) for c in target_string]
+    
+    # 3. Model the Execution State over time
+    # state[t] = (pointer, current_idx, output_index)
+    ptr = [Int(f'ptr_{t}') for t in range(max_steps + 1)]
+    idx = [Int(f'idx_{t}') for t in range(max_steps + 1)]
+    out_ptr = [Int(f'out_ptr_{t}') for t in range(max_steps + 1)]
+    
+    # Initial State
+    solver.add(ptr[0] == 0)
+    solver.add(idx[0] == 1) # Assuming index for p=97
+    solver.add(out_ptr[0] == 0)
+
+    for t in range(max_steps):
+        # Current value in the symbolic hearth
+        # Note: To simplify for SMT, we assume we stay in p=97 for this exercise
+        val = list_select(hearth, ptr[t])
+        
+        # 4. Symbolic Decoding Logic
+        # We model the properties of the value 'val'
+        # mode_print is true if val is even and non-zero
+        is_even = (val % 2 == 0)
+        is_nonzero = (val > 0)
+        mode_print = And(is_even, is_nonzero)
+        
+        # Payload extraction: the odd part of the value
+        # In a real SMT, we'd model the full factorization. 
+        # Here we constrain the payload for the print mode.
+        payload = val / 2 # Simplified for even numbers
+        
+        # 5. Transition Constraints
+        # If mode_print is active, the payload must match the target char
+        is_printing = out_ptr[t] < len(target_ascii)
+        solver.add(Implies(And(is_printing, mode_print), 
+                           (payload % 256) == target_ascii_at(target_ascii, out_ptr[t])))
+        
+        # Advance state
+        solver.add(out_ptr[t+1] == If(mode_print, out_ptr[t] + 1, out_ptr[t]))
+        solver.add(ptr[t+1] == (ptr[t] + 1) % hearth_size)
+        
+        # 6. Infinite Loop Prevention (The Zero Guard)
+        # The SMT ensures that we never process a 0 in a way that hangs
+        solver.add(Implies(val == 0, ptr[t+1] != ptr[t]))
+
+    # Assert that we reached the end of the string
+    solver.add(out_ptr[max_steps] == len(target_ascii))
+
+    if solver.check() == sat:
+        model = solver.model()
+        result = [model.evaluate(h).as_long() for h in hearth]
+        return result
+    else:
+        return None
+
+def list_select(l, i):
+    # Helper to pick a symbolic element from a list
+    res = l[0]
+    for j in range(1, len(l)):
+        res = If(i == j, l[j], res)
+    return res
+
+def target_ascii_at(arr, i):
+    res = arr[0]
+    for j in range(1, len(arr)):
+        res = If(i == j, arr[j], res)
+    return res
+
+# Run the solver
+soup = solve_hyperverse_soup("Hello")
+if soup:
+    print("Found converging soup:", soup[:10])
+else:
+    print("No solution found within constraints.")
