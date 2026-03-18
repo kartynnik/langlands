@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Paraconsistent Storage Systems</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400;600&family=Spectral:ital,wght@0,300;0,600;1,300&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0d0f12;
+  --bg2: #13161b;
+  --bg3: #1a1e26;
+  --grid: #1e2330;
+  --border: #2a3040;
+  --dim: #3a4458;
+  --muted: #5a6a82;
+  --text: #c8d4e8;
+  --bright: #e8f0ff;
+
+  /* Belnap states */
+  --b0: #4a7fa5;       /* False / |0⟩ */
+  --b1: #5aaa8a;       /* True / |1⟩ */
+  --bbot: #6a7a8a;     /* Vacuum / |⊥⟩ */
+  --btop: #c0503a;     /* Contradiction / |⊤⟩ */
+
+  --fano: #8a7acc;
+  --djvu: #c8a04a;
+
+  --mono: 'IBM Plex Mono', monospace;
+  --serif: 'Spectral', serif;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--mono);
+  font-size: 13px;
+  line-height: 1.6;
+  min-height: 100vh;
+}
+
+/* ── GRID BACKGROUND ── */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image:
+    linear-gradient(var(--grid) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+  background-size: 32px 32px;
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.5;
+}
+
+.wrap { position: relative; z-index: 1; max-width: 1100px; margin: 0 auto; padding: 48px 32px; }
+
+/* ── HEADER ── */
+header { margin-bottom: 56px; }
+.sys-label {
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  color: var(--muted);
+  text-transform: uppercase;
+  margin-bottom: 12px;
+}
+h1 {
+  font-family: var(--serif);
+  font-size: 2.8em;
+  font-weight: 300;
+  color: var(--bright);
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+  margin-bottom: 8px;
+}
+h1 em { font-style: italic; color: var(--muted); }
+.subtitle {
+  font-size: 12px;
+  color: var(--muted);
+  max-width: 600px;
+  font-style: italic;
+  font-family: var(--serif);
+}
+
+/* ── SECTION LAYOUT ── */
+.systems { display: grid; grid-template-columns: 1fr 1fr; gap: 2px; margin-bottom: 2px; }
+@media (max-width: 800px) { .systems { grid-template-columns: 1fr; } }
+
+.system-block {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  padding: 28px;
+  position: relative;
+}
+.system-block::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+}
+.photo-system::before { background: linear-gradient(90deg, var(--fano), transparent); }
+.doc-system::before   { background: linear-gradient(90deg, var(--djvu), transparent); }
+
+.sys-title {
+  font-family: var(--serif);
+  font-size: 1.4em;
+  font-weight: 600;
+  margin-bottom: 4px;
+  letter-spacing: -0.01em;
+}
+.photo-system .sys-title { color: var(--fano); }
+.doc-system .sys-title   { color: var(--djvu); }
+
+.sys-subtitle { font-size: 11px; color: var(--muted); margin-bottom: 24px; font-style: italic; font-family: var(--serif); }
+
+/* ── CASCADE DIAGRAM ── */
+.cascade {
+  margin: 20px 0;
+  position: relative;
+}
+.level {
+  display: flex;
+  align-items: stretch;
+  gap: 0;
+  margin-bottom: 2px;
+  position: relative;
+}
+.level-label {
+  width: 68px;
+  flex-shrink: 0;
+  font-size: 10px;
+  color: var(--muted);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding-right: 10px;
+  text-align: right;
+  line-height: 1.3;
+}
+.level-bar {
+  flex: 1;
+  padding: 10px 14px;
+  border-left: 2px solid;
+  position: relative;
+  min-height: 56px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.level-bar .name {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  color: var(--bright);
+  margin-bottom: 3px;
+}
+.level-bar .desc { font-size: 10px; color: var(--muted); line-height: 1.4; }
+.level-bar .formula {
+  font-size: 10px;
+  color: var(--dim);
+  margin-top: 5px;
+  font-style: italic;
+}
+
+/* Fano level colors — darkest (global) to brightest (local) */
+.fl0 { border-color: #3a3a6a; background: rgba(58,58,106,0.15); }
+.fl1 { border-color: #4a4a8a; background: rgba(74,74,138,0.12); }
+.fl2 { border-color: #6a5aaa; background: rgba(106,90,170,0.12); }
+.fl3 { border-color: var(--fano); background: rgba(138,122,204,0.12); }
+.fl4 { border-color: #aaa0e0; background: rgba(170,160,224,0.10); }
+
+.fl0 .name { color: #7a7ab0; }
+.fl1 .name { color: #9090c0; }
+.fl2 .name { color: #a898d8; }
+.fl3 .name { color: var(--fano); }
+.fl4 .name { color: #b8b0e8; }
+
+/* Noise indicator */
+.noise-bar {
+  height: 3px;
+  margin-top: 8px;
+  border-radius: 2px;
+  background: linear-gradient(90deg, var(--border), var(--btop));
+}
+
+/* ── BELNAP BADGES ── */
+.belnap { display: inline-flex; gap: 4px; margin-top: 6px; flex-wrap: wrap; }
+.bb {
+  font-size: 9px;
+  padding: 2px 6px;
+  border-radius: 2px;
+  border: 1px solid;
+  letter-spacing: 0.05em;
+}
+.bb-0   { color: var(--b0);   border-color: var(--b0);   background: rgba(74,127,165,0.1); }
+.bb-1   { color: var(--b1);   border-color: var(--b1);   background: rgba(90,170,138,0.1); }
+.bb-bot { color: var(--bbot); border-color: var(--bbot); background: rgba(106,122,138,0.1); }
+.bb-top { color: var(--btop); border-color: var(--btop); background: rgba(192,80,58,0.1); }
+
+/* ── DJVU LAYERS ── */
+.layer-stack { margin: 20px 0; display: flex; flex-direction: column; gap: 2px; }
+.djvu-layer {
+  border: 1px solid var(--border);
+  padding: 12px 16px;
+  position: relative;
+  overflow: hidden;
+}
+.djvu-layer::after {
+  content: '';
+  position: absolute;
+  top: 0; bottom: 0; right: 0;
+  width: 3px;
+}
+.dl-bg   { border-left: 3px solid var(--b0); background: rgba(74,127,165,0.07); }
+.dl-fg   { border-left: 3px solid var(--b1); background: rgba(90,170,138,0.07); }
+.dl-mask { border-left: 3px solid var(--btop); background: rgba(192,80,58,0.07); }
+.dl-bot  { border-left: 3px solid var(--bbot); background: rgba(106,122,138,0.07); }
+
+.dl-bg::after   { background: var(--b0); }
+.dl-fg::after   { background: var(--b1); }
+.dl-mask::after { background: var(--btop); }
+.dl-bot::after  { background: var(--bbot); }
+
+.layer-head { display: flex; align-items: baseline; gap: 10px; margin-bottom: 4px; }
+.layer-name { font-size: 11px; font-weight: 600; color: var(--bright); letter-spacing: 0.05em; }
+.layer-tag  { font-size: 9px; color: var(--muted); font-style: italic; font-family: var(--serif); }
+.layer-codec {
+  font-size: 9px;
+  padding: 1px 5px;
+  border: 1px solid var(--dim);
+  color: var(--dim);
+  border-radius: 2px;
+  margin-left: auto;
+}
+.layer-desc { font-size: 10px; color: var(--muted); line-height: 1.5; }
+
+/* ── CONNECTOR ARROW ── */
+.flow-arrow {
+  text-align: center;
+  color: var(--dim);
+  font-size: 11px;
+  padding: 4px 0;
+  letter-spacing: 0.1em;
+}
+
+/* ── PATTERN MAPPING TABLE ── */
+.mapping-block {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  padding: 28px;
+  margin-top: 2px;
+}
+.mapping-title {
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  color: var(--muted);
+  text-transform: uppercase;
+  margin-bottom: 20px;
+}
+.mapping-grid {
+  display: grid;
+  grid-template-columns: 160px 1fr 1fr;
+  gap: 1px;
+  background: var(--border);
+}
+.mg-cell {
+  background: var(--bg2);
+  padding: 10px 14px;
+  font-size: 10px;
+  line-height: 1.5;
+}
+.mg-header {
+  background: var(--bg3);
+  font-size: 9px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.mg-pattern { color: var(--bright); font-weight: 600; }
+.mg-photo   { color: var(--fano); }
+.mg-doc     { color: var(--djvu); }
+.mg-label   { color: var(--muted); font-style: italic; font-family: var(--serif); font-size: 9px; }
+
+/* ── DETAIL CALLOUTS ── */
+.callout-row { display: grid; grid-template-columns: 1fr 1fr; gap: 2px; margin-top: 2px; }
+.callout {
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  padding: 18px 20px;
+  font-size: 11px;
+}
+.callout-head {
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  color: var(--muted);
+  margin-bottom: 10px;
+}
+.callout p { color: var(--text); line-height: 1.6; font-family: var(--serif); font-size: 12px; font-weight: 300; }
+.callout code {
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--bright);
+  background: var(--bg);
+  padding: 1px 4px;
+  border-radius: 2px;
+}
+
+/* ── ANIMATED PULSE ── */
+@keyframes pulse-btop {
+  0%, 100% { opacity: 0.7; }
+  50% { opacity: 1; box-shadow: 0 0 8px var(--btop); }
+}
+.dl-mask { animation: pulse-btop 3s ease-in-out infinite; }
+
+@keyframes cascade-in {
+  from { opacity: 0; transform: translateX(-8px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+.level:nth-child(1) { animation: cascade-in 0.3s ease both; }
+.level:nth-child(2) { animation: cascade-in 0.3s 0.1s ease both; }
+.level:nth-child(3) { animation: cascade-in 0.3s 0.2s ease both; }
+.level:nth-child(4) { animation: cascade-in 0.3s 0.3s ease both; }
+.level:nth-child(5) { animation: cascade-in 0.3s 0.4s ease both; }
+
+/* ── SIGMA SCALE ── */
+.sigma-scale {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 12px 0 4px 78px;
+  font-size: 9px;
+  color: var(--muted);
+}
+.sigma-track {
+  flex: 1;
+  height: 6px;
+  border-radius: 3px;
+  background: linear-gradient(90deg, #3a3a6a, var(--btop));
+  position: relative;
+}
+.sigma-label { font-style: italic; }
+
+/* ── FOOTER NOTE ── */
+.footnote {
+  margin-top: 40px;
+  padding-top: 20px;
+  border-top: 1px solid var(--border);
+  font-size: 10px;
+  color: var(--muted);
+  font-family: var(--serif);
+  font-style: italic;
+  line-height: 1.8;
+}
+.footnote strong { color: var(--dim); font-style: normal; font-family: var(--mono); }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <div class="sys-label">Paraconsistent Storage Systems · Meta-Library Instantiation</div>
+    <h1>Two Storage Designs<br><em>from one pattern language</em></h1>
+    <p class="subtitle">Fano Cascade Photo Storage and DjVu-Inspired Document Storage, mapped to the Belnap 4-valued substrate.</p>
+  </header>
+
+  <!-- ══ TWO SYSTEM COLUMNS ══ -->
+  <div class="systems">
+
+    <!-- ── PHOTO STORAGE ── -->
+    <div class="system-block photo-system">
+      <div class="sys-title">Photo Storage</div>
+      <div class="sys-subtitle">Fano Encoding Cascade · Locally-Consistent Noise Budget</div>
+
+      <div class="sys-label" style="margin-bottom:8px">cascade levels · global → local</div>
+
+      <div class="sigma-scale">
+        <span class="sigma-label">σ low</span>
+        <div class="sigma-track"></div>
+        <span class="sigma-label">σ high</span>
+      </div>
+
+      <div class="cascade">
+        <div class="level">
+          <div class="level-label">L0<br>global</div>
+          <div class="level-bar fl0">
+            <div class="name">DC + Global Histogram</div>
+            <div class="desc">Full-image color distribution. Fano tree built top-down over all pixel values. Globally consistent — LEM holds here.</div>
+            <div class="formula">σ₀ · Fano(H_global)</div>
+            <div class="belnap">
+              <span class="bb bb-0">|0⟩ definite-dark</span>
+              <span class="bb bb-1">|1⟩ definite-bright</span>
+            </div>
+            <div class="noise-bar" style="width:12%"></div>
+          </div>
+        </div>
+
+        <div class="level">
+          <div class="level-label">L1<br>regional</div>
+          <div class="level-bar fl1">
+            <div class="name">32×32 Block Residuals</div>
+            <div class="desc">Fano-code deltas from global model. Blocks diverging &gt; σ₁ from L0 prediction are flagged |⊤⟩ and deferred.</div>
+            <div class="formula">σ₁ = 2·σ₀ · Fano(H_block − H_global)</div>
+            <div class="belnap">
+              <span class="bb bb-0">|0⟩</span><span class="bb bb-1">|1⟩</span>
+              <span class="bb bb-top">|⊤⟩ → L2</span>
+            </div>
+            <div class="noise-bar" style="width:28%"></div>
+          </div>
+        </div>
+
+        <div class="level">
+          <div class="level-label">L2<br>sub-block</div>
+          <div class="level-bar fl2">
+            <div class="name">8×8 Local Residuals</div>
+            <div class="desc">Takes L1 contradiction nodes as input. Larger noise budget σ₂. Texture and edge detail recovered here.</div>
+            <div class="formula">σ₂ = 4·σ₀ · Fano(H_8x8 | H_32x32)</div>
+            <div class="belnap">
+              <span class="bb bb-0">|0⟩</span><span class="bb bb-1">|1⟩</span>
+              <span class="bb bb-top">|⊤⟩ → L3</span>
+              <span class="bb bb-bot">|⊥⟩ smooth</span>
+            </div>
+            <div class="noise-bar" style="width:52%"></div>
+          </div>
+        </div>
+
+        <div class="level">
+          <div class="level-label">L3<br>pixel</div>
+          <div class="level-bar fl3">
+            <div class="name">Per-Pixel Residuals</div>
+            <div class="desc">Maximum local consistency tolerance. Handles edges, fine detail, thin structures. Contradiction is local — no global explosion.</div>
+            <div class="formula">σ₃ = 8·σ₀ · Fano(pixel | 8×8 context)</div>
+            <div class="belnap">
+              <span class="bb bb-0">|0⟩</span><span class="bb bb-1">|1⟩</span>
+              <span class="bb bb-bot">|⊥⟩ sub-pixel</span>
+              <span class="bb bb-top">|⊤⟩ quarantine</span>
+            </div>
+            <div class="noise-bar" style="width:80%"></div>
+          </div>
+        </div>
+
+        <div class="level">
+          <div class="level-label">|⊤⟩<br>store</div>
+          <div class="level-bar fl4">
+            <div class="name">Contradiction Sidecar</div>
+            <div class="desc">|⊤⟩ residuals that survived all levels are stored separately, losslessly. Topological quarantine — they cannot propagate into the cascade.</div>
+            <div class="formula">ρ_⊤ = Tr_env(R_G |ψ⟩⟨ψ| R_G†)</div>
+            <div class="belnap">
+              <span class="bb bb-top">|⊤⟩ isolated subfile</span>
+            </div>
+            <div class="noise-bar" style="width:100%"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="callout" style="margin-top:16px">
+        <div class="callout-head">Fano tree structure</div>
+        <p>Each level builds its own Fano prefix tree from the <em>local</em> probability distribution, not the global one. This is what "more locally consistent" means: the code is optimal for the local context, not forced to be globally consistent. The cascade is the mechanism that lets each level operate in its own consistency regime.</p>
+      </div>
+    </div>
+
+    <!-- ── DOCUMENT STORAGE ── -->
+    <div class="system-block doc-system">
+      <div class="sys-title">Document Storage</div>
+      <div class="sys-subtitle">DjVu Layer Model · Belnap-Typed Layers</div>
+
+      <div class="sys-label" style="margin-bottom:16px">layer stack · separated by Belnap truth value</div>
+
+      <div class="layer-stack">
+        <div class="djvu-layer dl-bg">
+          <div class="layer-head">
+            <span class="layer-name">BACKGROUND</span>
+            <span class="layer-tag">|0⟩ — False / paper</span>
+            <span class="layer-codec">IW44 wavelet</span>
+          </div>
+          <div class="layer-desc">Continuous-tone substrate. Low-frequency content. Progressive wavelet decomposition — globally consistent, like L0 in the photo cascade. Paper texture, scanned backgrounds, photographs embedded in documents.</div>
+          <div class="belnap" style="margin-top:8px">
+            <span class="bb bb-0">|0⟩ dominant</span>
+            <span class="bb bb-bot">|⊥⟩ whitespace</span>
+          </div>
+        </div>
+
+        <div class="flow-arrow">↓ subtract background from scan ↓</div>
+
+        <div class="djvu-layer dl-fg">
+          <div class="layer-head">
+            <span class="layer-name">FOREGROUND</span>
+            <span class="layer-tag">|1⟩ — True / ink</span>
+            <span class="layer-codec">JB2 shape dict</span>
+          </div>
+          <div class="layer-desc">Text glyphs, line art, high-contrast elements. JB2 builds a <strong>shape dictionary</strong> — this is the Nash equilibrium layer. Recurring glyphs are stable attractors. Cross-page shared dictionary = global consistency for common shapes; per-page variations = local tolerance.</div>
+          <div class="belnap" style="margin-top:8px">
+            <span class="bb bb-1">|1⟩ dominant</span>
+            <span class="bb bb-top">|⊤⟩ → mask</span>
+          </div>
+        </div>
+
+        <div class="flow-arrow">↓ pixels claimed by both layers → |⊤⟩ ↓</div>
+
+        <div class="djvu-layer dl-mask">
+          <div class="layer-head">
+            <span class="layer-name">MASK — QUARANTINE LAYER</span>
+            <span class="layer-tag">|⊤⟩ — Contradiction / boundary</span>
+            <span class="layer-codec">arithmetic + context</span>
+          </div>
+          <div class="layer-desc">Anti-aliased edges, sub-pixel glyph boundaries, pixels <em>claimed by both</em> background and foreground. This is the topological quarantine in operation: DjVu does not resolve these contradictions — it isolates them in a separate, losslessly-coded high-resolution binary mask. The explosion is structurally prevented.</div>
+          <div class="belnap" style="margin-top:8px">
+            <span class="bb bb-top">|⊤⟩ boundary pixels</span>
+          </div>
+        </div>
+
+        <div class="flow-arrow">↓ unclaimed by any layer ↓</div>
+
+        <div class="djvu-layer dl-bot">
+          <div class="layer-head">
+            <span class="layer-name">VACUUM</span>
+            <span class="layer-tag">|⊥⟩ — Neither / whitespace</span>
+            <span class="layer-codec">implicit (zero)</span>
+          </div>
+          <div class="layer-desc">Pixels that belong to no layer — pure whitespace, margins, empty regions. Not stored at all. The |⊥⟩ state is the default; absence is information.</div>
+          <div class="belnap" style="margin-top:8px">
+            <span class="bb bb-bot">|⊥⟩ implicit</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="callout" style="margin-top:16px">
+        <div class="callout-head">Shape dictionary as Nash equilibrium</div>
+        <p>The JB2 shape dictionary is a self-stabilizing set of locally-optimal glyph representations. No single glyph needs to be globally "correct" — each is the best strategy given the others. Cross-document shared dictionaries extend this to a global Nash equilibrium over a corpus. New glyph variants can coexist without forcing a full re-encoding.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ PATTERN MAPPING ══ -->
+  <div class="mapping-block">
+    <div class="mapping-title">Meta-Library → Concrete Instantiation Mapping</div>
+    <div class="mapping-grid">
+      <div class="mg-cell mg-header">Pattern Slot</div>
+      <div class="mg-cell mg-header" style="color:var(--fano)">Photo · Fano Cascade</div>
+      <div class="mg-cell mg-header" style="color:var(--djvu)">Document · DjVu</div>
+
+      <div class="mg-cell"><span class="mg-pattern">Belnap Space</span><br><span class="mg-label">4-valued logical substrate</span></div>
+      <div class="mg-cell mg-photo">Cascade levels hold different truth values: globally consistent L0/L1, locally consistent L2/L3, quarantined sidecar</div>
+      <div class="mg-cell mg-doc">Layers are typed by Belnap value: bg=|0⟩, fg=|1⟩, mask=|⊤⟩, whitespace=|⊥⟩</div>
+
+      <div class="mg-cell"><span class="mg-pattern">Resonance Gate R_G</span><br><span class="mg-label">maps contradiction to |⊤⟩</span></div>
+      <div class="mg-cell mg-photo">Level transition: if block residual &gt; σ_k threshold, R_G fires → |⊤⟩, passes to next level</div>
+      <div class="mg-cell mg-doc">Layer separation classifier: pixels claimed by both bg and fg → mask. Anti-aliasing detector.</div>
+
+      <div class="mg-cell"><span class="mg-pattern">Topological Quarantine</span><br><span class="mg-label">|⊤⟩ trapped, non-explosive</span></div>
+      <div class="mg-cell mg-photo">Contradiction sidecar file. Lossless, isolated, cannot propagate into cascade reconstruction.</div>
+      <div class="mg-cell mg-doc">The mask layer IS the quarantine. High-res binary map, arithmetically coded, separate from both other layers.</div>
+
+      <div class="mg-cell"><span class="mg-pattern">Nash Equilibrium</span><br><span class="mg-label">local stability, no global enforcer</span></div>
+      <div class="mg-cell mg-photo">Each level's Fano tree is locally optimal. No global code enforced top-down — each level updates independently.</div>
+      <div class="mg-cell mg-doc">JB2 shape dictionary: each glyph is a stable attractor. New glyphs added without invalidating existing entries.</div>
+
+      <div class="mg-cell"><span class="mg-pattern">σ / Noise Budget</span><br><span class="mg-label">local consistency tolerance</span></div>
+      <div class="mg-cell mg-photo">σ_k = 2^k · σ_0. Exponentially larger tolerance at each level. Global LEM at L0, fully local at L3.</div>
+      <div class="mg-cell mg-doc">Implicit: background layer allows high quantization noise (IW44 lossy). Mask layer: zero tolerance (lossless).</div>
+
+      <div class="mg-cell"><span class="mg-pattern">BQP Expansion</span><br><span class="mg-label">tractability gain</span></div>
+      <div class="mg-cell mg-photo">Search for optimal code is local at each level — O(n) passes rather than O(2^n) global optimization.</div>
+      <div class="mg-cell mg-doc">Segmentation and shape matching is local — no global document consistency needed to code each glyph.</div>
+    </div>
+  </div>
+
+  <!-- ══ DETAIL CALLOUTS ══ -->
+  <div class="callout-row">
+    <div class="callout">
+      <div class="callout-head">Photo · Reconstruction Contract</div>
+      <p>Decoding runs the cascade in reverse: L0 reconstructs the global skeleton, each successive level blends in its residuals. The contradiction sidecar is applied last as a correction layer. Crucially, a missing sidecar <em>does not corrupt the reconstruction</em> — it degrades gracefully. The |⊤⟩ nodes are <code>optional</code> in the logical sense: their absence resolves to |⊥⟩, not to explosion.</p>
+    </div>
+    <div class="callout">
+      <div class="callout-head">Document · Cross-Page Consistency</div>
+      <p>The JB2 dictionary can be shared across pages of a document — this is the global Nash equilibrium layer operating above the per-page local one. A shape that appears on page 1 is reused on page 47 via a dictionary reference. But each page can also contain local variants without forcing a global re-encoding. The cascade of consistency operates at three levels: <code>corpus → document → page → glyph</code>.</p>
+    </div>
+    <div class="callout">
+      <div class="callout-head">The Fano–DjVu Duality</div>
+      <p>Both systems share the same structural move: instead of enforcing global consistency at encoding time (which is the explosion risk), they <em>route contradictions to increasingly local contexts</em> where they can be handled with an appropriately sized noise budget. The Fano cascade does this temporally across levels; DjVu does it spatially across layers. Same meta-library pattern, two different axes of instantiation.</p>
+    </div>
+    <div class="callout">
+      <div class="callout-head">Open Slot: p-adic Fault Detection</div>
+      <p>The Resonance Gate's p-adic phase <code>e^{iφ_p}</code> maps here as a cross-block modularity check: a block's Fano statistics are "modular" if they fit the parent level's model within σ_k. "Non-modular" blocks (Frey curve analogy) trigger quarantine. This gives an algebraic fault signature: blocks with non-modular signatures are structurally flagged before expensive residual coding begins.</p>
+    </div>
+  </div>
+
+  <div class="footnote">
+    Both designs are instantiations of the same meta-library. The slot <strong>R_G</strong> is filled differently in each; the slot <strong>Quarantine</strong> is filled differently; but the logical type signature is preserved across both. A third instantiation — say, a video codec or a distributed database — would fill the same slots again, with the meta-library constraining the interface without dictating the implementation. · The |⊤⟩ state is never an error: it is a first-class value with its own storage, its own codec, and its own reconstruction contract.
+  </div>
+
+</div>
+</body>
+</html>
