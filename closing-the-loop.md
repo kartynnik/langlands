@@ -1,4 +1,4 @@
-YURY KARTYNNIK:
+**:technologist: Yury Kartynnik:**
 
 These reals are strange attractors because they:
 * resemble to us, within the framework of mathematics, so many things that are successful in many situations
@@ -6,7 +6,7 @@ These reals are strange attractors because they:
 * who resemble us
 * recurse
 
-HERE COMES CLAUDE SONNET'S ANSWER WITHIN A LONGER CONVERSATION:
+> Here comes Claude Sonnet 4.6's answer within a longer conversation:
 
 Yes.
 
