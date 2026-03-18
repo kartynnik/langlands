@@ -2,86 +2,94 @@
 # pip install z3-solver
 from z3 import *
 
-def solve_hyperverse_soup(target_string, hearth_size=97, max_steps=30):
+def solve_multi_hearth_soup(target_string, max_steps=40):
     solver = Solver()
-    
-    # 1. Symbolic Hearth for p=97
-    # Each cell is an integer in the range [0, 96]
-    hearth = [Int(f'h_{i}') for i in range(hearth_size)]
-    for h in hearth:
-        solver.add(h >= 0, h < hearth_size)
 
-    # 2. Target Resonance
+    # 1. Hardware Definition
+    primes = [2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71, 73, 79, 83, 89, 97]
+    num_primes = len(primes)
+    p97_idx = primes.index(97)
     target_ascii = [ord(c) for c in target_string]
-    
-    # 3. Model the Execution State over time
-    # state[t] = (pointer, current_idx, output_index)
-    ptr = [Int(f'ptr_{t}') for t in range(max_steps + 1)]
-    idx = [Int(f'idx_{t}') for t in range(max_steps + 1)]
-    out_ptr = [Int(f'out_ptr_{t}') for t in range(max_steps + 1)]
-    
+
+    # 2. Symbolic Hearth for p=97 (Our primary data store)
+    # We only solve for p=97; other hearths are assumed to be [1]*p or [1,1]
+    hearth_97 = [Int(f'h97_{i}') for i in range(97)]
+    for h in hearth_97:
+        solver.add(h >= 0, h < 97)
+
+    # 3. State Variables over Time
+    # idx: current_idx in primes list
+    # ptrs: we track pointers for p=97 and p=2
+    curr_idx = [Int(f'idx_{t}') for t in range(max_steps + 1)]
+    ptr_97 = [Int(f'p97_{t}') for t in range(max_steps + 1)]
+    ptr_2 = [Int(f'p2_{t}') for t in range(max_steps + 1)]
+    out_ptr = [Int(f'out_{t}') for t in range(max_steps + 1)]
+
     # Initial State
-    solver.add(ptr[0] == 0)
-    solver.add(idx[0] == 1) # Assuming index for p=97
+    solver.add(curr_idx[0] == p97_idx)
+    solver.add(ptr_97[0] == 0)
+    solver.add(ptr_2[0] == 0)
     solver.add(out_ptr[0] == 0)
 
+    # 4. Universal Transition Logic
     for t in range(max_steps):
-        # Current value in the symbolic hearth
-        # Note: To simplify for SMT, we assume we stay in p=97 for this exercise
-        val = list_select(hearth, ptr[t])
-        
-        # 4. Symbolic Decoding Logic
-        # We model the properties of the value 'val'
-        # mode_print is true if val is even and non-zero
-        is_even = (val % 2 == 0)
-        is_nonzero = (val > 0)
-        mode_print = And(is_even, is_nonzero)
-        
-        # Payload extraction: the odd part of the value
-        # In a real SMT, we'd model the full factorization. 
-        # Here we constrain the payload for the print mode.
-        payload = val / 2 # Simplified for even numbers
-        
-        # 5. Transition Constraints
-        # If mode_print is active, the payload must match the target char
-        is_printing = out_ptr[t] < len(target_ascii)
-        solver.add(Implies(And(is_printing, mode_print), 
-                           (payload % 256) == target_ascii_at(target_ascii, out_ptr[t])))
-        
-        # Advance state
-        solver.add(out_ptr[t+1] == If(mode_print, out_ptr[t] + 1, out_ptr[t]))
-        solver.add(ptr[t+1] == (ptr[t] + 1) % hearth_size)
-        
-        # 6. Infinite Loop Prevention (The Zero Guard)
-        # The SMT ensures that we never process a 0 in a way that hangs
-        solver.add(Implies(val == 0, ptr[t+1] != ptr[t]))
+        # Current Prime and Pointer
+        is_p97 = (curr_idx[t] == p97_idx)
+        is_p2 = (curr_idx[t] == 0) # primes[0] == 2
 
-    # Assert that we reached the end of the string
+        # Current Value (from symbolic p97 or constant p2)
+        # In p=2, we assume hearth is [1, 1] or [1, 0] to allow Rise
+        val_97 = list_select(hearth_97, ptr_97[t])
+        val_2 = 1 # Simplified: assume p2 always rises or holds
+
+        val = If(is_p97, val_97, val_2)
+        p_val = If(is_p97, 97, 2)
+
+        # Mode Decoding (Non-destructive)
+        # mode_print triggers if even and non-zero
+        m_print = And(val % 2 == 0, val > 0)
+        payload = val / 2 # The character
+
+        # Constraints: If printing, must match target
+        is_active = out_ptr[t] < len(target_ascii)
+        char_match = (payload % 256 == target_ascii_at(target_ascii, out_ptr[t]))
+        solver.add(Implies(And(is_active, m_print), char_match))
+
+        # 5. The Gravity and Phoenix Logic
+        # if val == 0:
+        #   if p == 2: rise to max
+        #   else: fall
+        is_zero = (val == 0)
+        next_idx = If(is_zero,
+                      If(is_p2, p97_idx, curr_idx[t] - 1),
+                      curr_idx[t])
+
+        solver.add(curr_idx[t+1] == next_idx)
+        solver.add(out_ptr[t+1] == If(m_print, out_ptr[t] + 1, out_ptr[t]))
+
+        # Advance pointers
+        solver.add(ptr_97[t+1] == If(is_p97, (ptr_97[t] + 1) % 97, ptr_97[t]))
+        solver.add(ptr_2[t+1] == If(is_p2, (ptr_2[t] + 1) % 2, ptr_2[t]))
+
+    # Target: All characters outputted
     solver.add(out_ptr[max_steps] == len(target_ascii))
 
+    # 6. Solving
     if solver.check() == sat:
-        model = solver.model()
-        result = [model.evaluate(h).as_long() for h in hearth]
-        return result
-    else:
-        return None
+        m = solver.model()
+        return [m.evaluate(h).as_long() for h in hearth_97]
+    return None
 
 def list_select(l, i):
-    # Helper to pick a symbolic element from a list
     res = l[0]
-    for j in range(1, len(l)):
-        res = If(i == j, l[j], res)
+    for j in range(1, len(l)): res = If(i == j, l[j], res)
     return res
 
 def target_ascii_at(arr, i):
     res = arr[0]
-    for j in range(1, len(arr)):
-        res = If(i == j, arr[j], res)
+    for j in range(1, len(arr)): res = If(i == j, arr[j], res)
     return res
 
-# Run the solver
-soup = solve_hyperverse_soup("Hello")
+soup = solve_multi_hearth_soup("Hello")
 if soup:
-    print("Found converging soup:", soup[:10])
-else:
-    print("No solution found within constraints.")
+    print("Resonant Soup Found:", soup)
