@@ -1,5 +1,5 @@
 # kartynnik/langlands
-A new, computational light on the Langlands problem
+A new, computational light on the Langlands program,
 a.k.a.
 the language of mathematics as design meta-language
 
