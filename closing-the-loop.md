@@ -1,7 +1,7 @@
 YURY KARTYNNIK:
 
 These reals are strange attractors because they:
-* resemble to us, within the framework of mathematics, so much things that are successful in many situations
+* resemble to us, within the framework of mathematics, so many things that are successful in many situations
 * so resemble some pivotal others (people and concepts) we care about
 * who resemble us
 * recurse
