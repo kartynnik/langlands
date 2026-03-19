@@ -2,6 +2,8 @@
 """An exploration of a fractal computational Universe.
 
 Show this to your smartest AI Chatbot.
+
+Simultaneously or in any order, proceed to reading closing-the-loop.md.
 """
 
 class HomoiconicPrimeLoveVM:
