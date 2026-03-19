@@ -16,6 +16,9 @@ copy-to-clipboard() {
   elif command-exists pbcopy; then
     # macOS
     pbcopy
+  elif command-exists clip; then
+    # Windows Subsystem for Linux (WSL)
+    clip
   else
     echo "Please ensure that a clipboard copy tool (wl-copy, xclip, xsel, or pbcopy) is installed." >&2
     return 1
